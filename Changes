@@ -17,3 +17,9 @@ Revision history for Perl extension SpaceTag::DoCoMo.
   - Change engine from SQLite to flat file & regexp. it's faster.
   - Some API's name were changed. Old names are also last.
   - get_nextarea method is shadowed. because, NTT DoCoMo's website includes a lot of errors.
+
+2.01  Mon Jun 28 11:42:06 2004 JST
+  - get_nextarea method is unveiled again. DoCoMo data's inconsistencies are adjusted.
+  - Add adjusted mode of aura data. DoCoMo's aura data contains a lot of inconsistencies,
+     so add adjusted data mode.
+  - Add include_area method.

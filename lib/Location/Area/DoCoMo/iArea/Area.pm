@@ -1,22 +1,24 @@
 package Location::Area::DoCoMo::iArea::Area;
 
 use strict;
+require Location::Area::DoCoMo::iArea::Aura; 
 
 sub seek
 {
   shift;
   my $arg = shift;
+  my $useAdjustedAura = shift;
   seek DATA,0,0;
-  my ($aid,$said,$name,$wara,$sara,$eara,$nara,$mesh);
+  my ($aid,$said,$name,$wara,$sara,$eara,$nara,$mesh,$meshcache);
   if ($arg =~ /^\d{5}$/)
   {
     ($aid,$said) = $arg =~ /^(\d{3})(\d{2})$/;
     while (my $line = <DATA>)
     {
-      my @scan = $line =~ /^$aid,$said,([^,]+),(\d{8,9}),(\d{8,9}),(\d{8,9}),(\d{8,9}),/;
+      my @scan = $line =~ /^$aid,$said,([^,]+),(\d{8,9}),(\d{8,9}),(\d{8,9}),(\d{8,9}),(.*)$/;
       if (@scan)
       {
-        ($name,$wara,$sara,$eara,$nara) = @scan;
+        ($name,$wara,$sara,$eara,$nara,$meshcache) = @scan;
         last;
       }
     }
@@ -26,14 +28,15 @@ sub seek
     my ($m2,$m3,$m4,$m5,$m6,$m7) = $arg =~ /^(\d{6})(\d?)(\d?)(\d?)(\d?)(\d?)$/;
     while (my $line = <DATA>)
     {
-      my @scan = $line =~ /^(\d{3}),(\d{2}),([^,]+),(\d{8,9}),(\d{8,9}),(\d{8,9}),(\d{8,9}),.*,(${m2}(${m3}(${m4}(${m5}(${m6}${m7}?)?)?)?)?),/;
+      my @scan = $line =~ /^(\d{3}),(\d{2}),([^,]+),(\d{8,9}),(\d{8,9}),(\d{8,9}),(\d{8,9}),(.*,(${m2}(${m3}(${m4}(${m5}(${m6}${m7}?)?)?)?)?),.*)$/;
       if (@scan)
       {
-        ($aid,$said,$name,$wara,$sara,$eara,$nara,$mesh) = @scan;
+        ($aid,$said,$name,$wara,$sara,$eara,$nara,$meshcache,$mesh) = @scan;
         last;
       }
     }
   }
+  ($wara,$sara,$eara,$nara) =  Location::Area::DoCoMo::iArea::Aura->seek($aid,$said) if ($useAdjustedAura);
   return {
     areaid => $aid,
     sub_areaid => $said,
@@ -42,6 +45,7 @@ sub seek
     south => $sara,
     east => $eara,
     north => $nara,
+    meshcache => $meshcache,
   };
 }
 

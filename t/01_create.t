@@ -1,12 +1,15 @@
 use strict;
-use Test::More tests => 3856;
-use Jcode;
+use Test::More tests => 4361;
 
 BEGIN { use_ok 'Location::Area::DoCoMo::iArea' }
 
 my %scaned;
-
+my @list;
 while (<DATA>) {
+  push @list,$_;
+}
+
+foreach (@list) {
   my ($id,$name,$wara,$sara,$eara,$nara,$lat,$long) = split(/,/,$_);
   my $obj = Location::Area::DoCoMo::iArea->create_coord($lat,$long,'tokyo','gpsone');
   next unless ($obj);
@@ -18,6 +21,16 @@ while (<DATA>) {
     my $aura = $obj->get_aura;
     my ($s,$w,$n,$e) = map { int($_ * 1000) } $aura->datum_tokyo->format_second->array;
     ok (($s eq $sara) && ($w eq $wara) && ($n eq $nara) && ($e eq $eara));
+    my $rand = int(rand()*@list);
+    my ($lid,$llat,$llong) = $list[$rand] =~ /^(\d{5}),.*.,([^,]+),([^,]+)$/;
+    if ($lid == $id)
+    {
+      ok $obj->include_area($llat,$llong,'tokyo','gpsone');
+    }
+    else
+    {
+      ok !($obj->include_area($llat,$llong,'tokyo','gpsone'));
+    }
     $scaned{$id} = 1;
   }
 }

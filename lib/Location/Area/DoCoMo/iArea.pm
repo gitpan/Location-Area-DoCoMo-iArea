@@ -9,8 +9,8 @@ package Location::Area::DoCoMo::iArea;
 use 5.008;
 use strict;
 use warnings;
-use vars qw($VERSION $AUTOLOAD);
-$VERSION = 2.00;
+use vars qw($VERSION $AUTOLOAD $useAdjustedAura);
+$VERSION = 2.01;
 
 use Carp;
 use Location::GeoTool;
@@ -20,12 +20,22 @@ require Location::Area::DoCoMo::iArea::Region;
 require Location::Area::DoCoMo::iArea::Next;
 
 __PACKAGE__->_make_accessors(
-  qw(areaid sub_areaid name)
+  qw(areaid sub_areaid name meshcache)
 );
 
 ################################################################
 # Constructor                  #
 ################################
+
+sub import
+{
+  my $caller = shift;
+  $useAdjustedAura = 0;
+  foreach (@_)
+  {
+    $useAdjustedAura = 1 if ($_ =~ /useAdjustedAura/);
+  }
+}
 
 ################################
 # From iArea code
@@ -45,13 +55,28 @@ sub create_iarea
     return undef;
   }
 
-  return bless Location::Area::DoCoMo::iArea::Area->seek("$area$sub_area"),$class;
+  return bless Location::Area::DoCoMo::iArea::Area->seek("$area$sub_area",$useAdjustedAura),$class;
 }
 
 ################################
 # From coordinate
 
 sub create_coord
+{
+  my $class = shift;
+  my $mesh = $class->calcurate_mesh(@_);
+  return bless Location::Area::DoCoMo::iArea::Area->seek($mesh,$useAdjustedAura),$class;
+}
+
+sub include_area
+{
+  my $self = shift;
+  my $mesh = $self->calcurate_mesh(@_);
+  my ($m2,$m3,$m4,$m5,$m6,$m7) = $mesh =~ /^(\d{6})(\d?)(\d?)(\d?)(\d?)(\d?)$/;
+  return $self->meshcache =~ /,(${m2}(${m3}(${m4}(${m5}(${m6}${m7}?)?)?)?)?),/ ? 1 : 0;
+}
+
+sub calcurate_mesh
 {
   my $class = shift;
   my ($lat,$lon,$usetokyo,$format) = @_;
@@ -109,7 +134,7 @@ sub create_coord
   my $k = $l7 + $m7 * 2;
   $mesh[5] = $mesh[4].$k;
 
-  return bless Location::Area::DoCoMo::iArea::Area->seek($mesh[5]),$class;
+  return $mesh[5];
 }
 
 ################################################################
@@ -226,6 +251,8 @@ Location::Area::DoCoMo::iArea - Get NTT DoCoMo's i-Area from i-Area code or Geo 
 =head1 SYNOPSIS
 
   use Location::Area::DoCoMo::iArea;
+  # Or, if you want to use adjusted Aura data,
+  use Location::Area::DoCoMo::iArea qw(useAdjustedAura);
 
   #Create object
 
@@ -280,6 +307,14 @@ Create Location::Area::DoCoMo::iArea object from coordinate.
     $lon   : Longitude (East are Positive).
     $datum : Specify datum of $lat/$long. (See Location::GeoTool)
     $format: Specify format of $lat/$long. (See Location::GeoTool)
+
+  or another way,
+
+  Usage:
+    $obj = Location::Area::DoCoMo::iArea->create_coord($point);
+  Arguments:
+    $point : Object of Location::GeoTool.
+
   Return Values:
     $obj   : Location::Area::DoCoMo::iArea object. undef if can't bind coordinate to area.
 
@@ -314,6 +349,20 @@ Each fields return full area code, main area code or sub area code.
 Each fields return area name, prefecture name of this area or region name of this area.
 Each return values are described in EUC-JP character code.
 
+=head2 METHODS
+
+=head3 include_area
+
+Check the point is included current area or not.
+
+  Usage:
+    $is_include = $obj->include_area($lat,$lon,$datum,$format);
+    # or
+    $is_include = $obj->include_area($point);
+
+  Return Values:
+    $is_include : Return 1 if included, 0 if not.
+
 =head3 get_aura
 
 Get aura (boundary square of area) object - Location::GeoTool::Aura.
@@ -330,16 +379,28 @@ The way to use Location::GeoTool::Aura object is like below:
  #Get boundary latitude/longitude array:
    ($sbound,$wbound,$nbound,$ebound) = $oAura->......->array;
 
+  Notice:
+    NTT DoCoMo's aura data contains a lot of inconsistencies.
+    There are differents between Aura boundary square, which is
+    defined by DoCoMo's summary data, and that is calcurated
+    from mesh data.
+
+    So, I add adjusted aura data which are calcurated from mesh,
+    you can use it.
+    If you want, you should use this module like this:
+     
+     use Location::Area::DoCoMo::iArea qw(useAdjustedAura);
+    
 =head3 get_center
 
 Get aura's center point by Location::GeoTool object.
 
   Usage:
-    $oCent = $obj->get_center;
+    $cpoint = $obj->get_center;
 
 To get coordinate of center point, like below:
 
-   ($clat,$clong) = $oCent->datum_wgs84->format_degree->array;
+   ($clat,$clong) = $cpoint->datum_wgs84->format_degree->array;
 
 =head3 get_nextarea
 
@@ -350,8 +411,10 @@ To get coordinate of center point, like below:
   Return Values:
     @next  : i-Area object list of areas next to this area.
   Notice:
-    If there is the sea between one area and another, they are not next area.
-    This definition is based on NTT DoCoMo's.
+   1.If there is the sea between one area and another, they are not next area.
+     This definition is based on NTT DoCoMo's.
+   2.DoCoMo's official data contains a lot of inconsistencies.
+     So, this module adjusts them.
 
 =head1 DEPENDENCIES
 
