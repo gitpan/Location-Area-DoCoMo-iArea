@@ -10,7 +10,7 @@ use 5.008;
 use strict;
 use warnings;
 use vars qw($VERSION $AUTOLOAD $useAdjustedAura);
-$VERSION = 2.01;
+$VERSION = 2.02;
 
 use Carp;
 use Location::GeoTool;
