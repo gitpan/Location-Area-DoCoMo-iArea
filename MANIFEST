@@ -1,0 +1,8 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/Location-Area-DoCoMo-iArea.t
+lib/Location/Area/DoCoMo/iArea.pm
+lib/Location/Area/DoCoMo/iArea/Data.pm
+META.yml                                 Module meta-data (added by MakeMaker)

@@ -1,0 +1,9 @@
+Revision history for Perl extension SpaceTag::DoCoMo.
+
+0.90  Mon Nov 17 20:52:57 2003
+	- original version; created by h2xs 1.23 with options
+		-A -X -n SpaceTag::DoCoMo
+
+1.00  Sun Jan 18 21:18:53 2004
+	- Change the name of module to: Location::Area::DoCoMo::iArea
+  - add method: getNextArea
