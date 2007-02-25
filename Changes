@@ -23,3 +23,7 @@ Revision history for Perl extension SpaceTag::DoCoMo.
   - Add adjusted mode of aura data. DoCoMo's aura data contains a lot of inconsistencies,
      so add adjusted data mode.
   - Add include_area method.
+
+2.10  Sun Feb 25 12:20:00 2007 JST
+  - Data were updated by data released at Feb 20, 2007.
+    Thank you for Mr. Kunihiko Miyanaga!

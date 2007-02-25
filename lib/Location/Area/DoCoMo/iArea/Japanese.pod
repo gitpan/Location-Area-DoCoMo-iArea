@@ -207,11 +207,13 @@ Location::GeoTool::Auraオブジェクトは以下のように使ってください。
 
 =head1 作者
 
-OHTSUKA Ko-hei, E<lt>kotsuka@spacetag.jpE<gt>
+OHTSUKA Ko-hei, E<lt>nene@kokogiko.netE<gt>
 
 =head1 著作権・ライセンス
 
-Copyright (C) 2004 by SpaceTag INC.,
+Copyright (C) 2004-2007 by ここギコ！,
+最新のデータへのアップデートは、アイデアマンズ株式会社(http://www.ideamans.com/)のKunihiko Miyanaga氏のご尽力により行われました。
+ありがとうございました。
 
 本ライブラリはフリーソフトであり、Perl本体と同じ条件での再配布・改変が可能です。
 

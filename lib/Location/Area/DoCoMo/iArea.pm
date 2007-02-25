@@ -10,7 +10,7 @@ use 5.008;
 use strict;
 use warnings;
 use vars qw($VERSION $AUTOLOAD $useAdjustedAura);
-$VERSION = 2.02;
+$VERSION = 2.10;
 
 use Carp;
 use Location::GeoTool;
@@ -434,11 +434,14 @@ To get coordinate of center point, like below:
 
 =head1 AUTHOR
 
-OHTSUKA Ko-hei, E<lt>kotsuka@spacetag.jpE<gt>
+OHTSUKA Ko-hei, E<lt>nene@kokogiko.netE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2004 by SpaceTag INC.,
+Copyright (C) 2004-2007 by Kokogiko!,
+And, latest data updating is based on Mr. Kunihiko Miyanaga(ideaman's Inc. 
+http://www.ideamans.com/)'s work.
+Thank you!
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.0 or,

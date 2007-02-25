@@ -3,9 +3,6 @@ Makefile.PL
 MANIFEST
 README
 t/00_compile.t
-t/01_create.t
-t/02_region_next.t
-t/03_adj_aura.t
 lib/Location/Area/DoCoMo/iArea.pm
 lib/Location/Area/DoCoMo/iArea/Area.pm
 lib/Location/Area/DoCoMo/iArea/Next.pm
